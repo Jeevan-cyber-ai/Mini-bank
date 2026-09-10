@@ -37,6 +37,26 @@ public class CustomerService {
         return toResponse(customer);
     }
 
+    public CustomerResponse updateCustomer(Long id, CustomerRequest request) {
+        Customer customer = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + id));
+
+        customer.setFirstName(request.firstName());
+        customer.setLastName(request.lastName());
+        customer.setEmail(request.email());
+        customer.setPhoneNumber(request.phoneNumber());
+        customer.setAddress(request.address());
+
+        Customer updated = repository.save(customer);
+        return toResponse(updated);
+    }
+
+    public void deleteCustomer(Long id) {
+        Customer customer = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + id));
+        repository.delete(customer);
+    }
+
     private CustomerResponse toResponse(Customer customer) {
         return new CustomerResponse(
                 customer.getId(),

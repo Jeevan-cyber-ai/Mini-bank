@@ -3,11 +3,17 @@ package com.banfico.mini_banking.dto.response;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public record CustomerRequest(
-        @NotBlank String firstName,
-        @NotBlank String lastName,
-        @Email @NotBlank String email,
-        String phoneNumber,
-        String address) {
+                @NotBlank(message = "First name is required") @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters") String firstName,
+
+                @NotBlank(message = "Last name is required") @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters") String lastName,
+
+                @NotBlank(message = "Email is required") @Email(message = "Email must be a valid format") String email,
+
+                @Pattern(regexp = "^\\d{10}$", message = "Phone number must be exactly 10 digits") String phoneNumber,
+
+                String address) {
 }
