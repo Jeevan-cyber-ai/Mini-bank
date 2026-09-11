@@ -1,3 +1,4 @@
+// exception/GlobalExceptionHandler.java
 package com.banfico.mini_banking.exception;
 
 import org.springframework.http.HttpStatus;
@@ -16,15 +17,24 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleNotFound(
+            ResourceNotFoundException ex, WebRequest request) {
         return build(HttpStatus.NOT_FOUND, ex.getMessage(), request);
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicate(DuplicateResourceException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleDuplicate(
+            DuplicateResourceException ex, WebRequest request) {
         return build(HttpStatus.CONFLICT, ex.getMessage(), request);
     }
 
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ErrorResponse> handleInvalid(
+            InvalidRequestException ex, WebRequest request) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+
+    // Handles @Valid failures on request bodies
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -34,9 +44,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
+    // Catch-all fallback for anything unexpected
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex, WebRequest request) {
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong: " + ex.getMessage(), request);
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong", request);
     }
 
     private ResponseEntity<ErrorResponse> build(HttpStatus status, String message, WebRequest request) {
@@ -45,8 +56,7 @@ public class GlobalExceptionHandler {
                 status.value(),
                 status.getReasonPhrase(),
                 message,
-                request.getDescription(false).replace("uri=", "")
-        );
+                request.getDescription(false).replace("uri=", ""));
         return ResponseEntity.status(status).body(body);
     }
 }

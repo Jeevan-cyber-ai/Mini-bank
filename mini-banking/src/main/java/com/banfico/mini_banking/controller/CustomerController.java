@@ -29,8 +29,7 @@ public class CustomerController {
 
     @PostMapping
     public ResponseEntity<CustomerResponse> create(@Valid @RequestBody CustomerRequest req) {
-        CustomerResponse created = service.create(req);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(req));
     }
 
     @GetMapping
